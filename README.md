@@ -21,11 +21,11 @@ Mutexes ensure safe access to shared resources across multiple threads, preventi
 Task priorities can be stored as integers, strings, or custom-defined types using C++ templates.
 
 # Technologies Used
-C++17 (or higher)
-Multi-threading (<thread>, <mutex>)
-Dynamic Memory Management (std::unique_ptr, <vector>)
+C++17 
+Multi-threading 
+Dynamic Memory Management 
 Templates for reusable and flexible code
-File I/O for task persistence (<fstream>)
+File I/O for task persistence
 
 # How it works
 Thread Management: The app detects the system’s hardware concurrency (logical cores) and adjusts its threads for optimal performance.
