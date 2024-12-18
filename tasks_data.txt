@@ -1,3 +1,6 @@
 Complete Project,High,2024-12-20
 Buy Groceries,Medium,2024-12-19
 Pay Bills,Low,2024-12-22
+Complete Project,High,2024-12-20
+Buy Groceries,Medium,2024-12-19
+Pay Bills,Low,2024-12-22

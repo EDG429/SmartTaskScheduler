@@ -8,6 +8,8 @@
 #include <iostream>   // For std::cout and std::endl
 #include <fstream>    // For file I/O
 #include <mutex>      // For std::mutex
+#include <sstream>    // For std::istringstream
+
 
 // Templated Task Scheduler class is responsible for managing a collection of tasks dynamically.
 // It uses templates so it can handle tasks with different types of priorities (e.g., int, string).
@@ -53,7 +55,7 @@ public:
 	}
 
 	// Function to display all tasks
-	void list_tasks() const {
+	void list_tasks() {
 		std::lock_guard<std::mutex> lock(tasks_mutex);
 		// If there are no tasks, let the user know.
 		if (tasks.empty()) {
@@ -79,6 +81,39 @@ public:
 			std::cerr << "Failed to open file: " << filename << "\n";
 		}
 		
+	}
+
+	// Function to load from a file
+	void load_from_file(const std::string& filename) {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
+
+		std::ifstream file(filename);
+		if (!file.is_open()) {
+			std::cerr << "Failed to open file: " << filename << "\n";
+			return;
+		}
+
+		std::string line;
+		while (std::getline(file, line)) {
+			std::istringstream iss(line);
+			std::string name, priority_str, deadline;
+
+			// Parse the .csv file
+			if (std::getline(iss, name, ',') &&
+				std::getline(iss, priority_str, ',') &&
+				std::getline(iss, deadline)) {
+
+				// Convert the priority to the correct type
+				std::istringstream priority_stream(priority_str);
+				T priority;
+				priority_stream >> priority;
+
+				// Add the task to the scheduler
+				tasks.push_back(std::make_unique<Task<T>>(name, priority, deadline));
+			}
+		}
+		file.close();
+		std::cout << "Tasks loaded from " << filename << "\n";
 	}
 };
 
