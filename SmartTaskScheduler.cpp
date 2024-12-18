@@ -1,54 +1,32 @@
-#include <thread>
-#include <mutex>
+#include "Task.h"
 #include <vector>
-#include <string>
-#include <memory>
-#include <fstream>
-#include <iostream>
 
-// Thread optimized code
+int main() {
+	// Example usage of the Task class with different priority types
+	Task<int> task1("Complete Project", 1, std::string("2024-12-20"));
+	Task<std::string> task2("Buy Groceries", std::string("High"), std::string("2024-12-19"));
+	Task<double> task3("Pay Bills", 2.5, std::string("2024-12-22"));
 
-// Global mutex for thread safety
-std::mutex mtx;
+	// Store tasks in a vector (we'll use smart pointers later)
+	std::vector<Task<std::string>> string_priority_tasks;
+	std::vector<Task<int>> int_priority_tasks;
 
-// Function that simulates workload
-void task_function(int task_id) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100)); //  simulates 100 ms of work
-    std::lock_guard<std::mutex> lock(mtx);
-    std::cout << "Task " << task_id << " completed on thread " << std::this_thread::get_id() << "\n";
-}
+	int_priority_tasks.emplace_back(std::string("Finish Homework"), 2, std::string("2024-12-18"));
+	string_priority_tasks.emplace_back(std::string("Call Doctor"), std::string("Medium"), std::string("2024-12-21"));
 
-int main()
-{
-    // Step 1 - Detect the number of logical cores
-    unsigned int num_threads = std::thread::hardware_concurrency();
-    if (num_threads == 0) num_threads = 2; // Fallback for unknown hardware
-    std::cout << "Detected " << num_threads << " logical cores.\n";
+	// Display tasks
+	std::cout << "Testing Task Class:" << std::endl;
+	task1.display();
+	task2.display();
+	task3.display();
 
-    // Step 2 - Create a dynamic thread pool
-    std::vector<std::thread> thread_pool;
-    const int total_tasks = 10; // Number of tasks to perform
+	std::cout << "\nTasks in Vector:" << std::endl;
+	for (const auto& task : int_priority_tasks) {
+		task.display();
+	}
+	for (const auto& task : string_priority_tasks) {
+		task.display();
+	}
 
-    // Step 3 - Assign tasks to the threads in the pool
-    for (int i = 0; i < total_tasks; i++) {
-        if (thread_pool.size() >= num_threads) {
-            // wait for threads to finish before creating more
-            for (auto& t : thread_pool) {
-                if (t.joinable()) t.join();
-            }
-            thread_pool.clear();
-        }
-        // Launch a new thread
-        thread_pool.emplace_back(task_function, i);
-    }
-
-    // Step 4 - Ensure all threads are joined
-    for (auto& t : thread_pool) {
-        if (t.joinable()) t.join();
-    }
-
-
-    std::cout << "All tasks completed. Program optimized for " << num_threads << " threads." << std::endl;
-
-    return 0;
+	return 0;
 }

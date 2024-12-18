@@ -8,14 +8,16 @@
 template <typename T>
 class Task {
 private:
-	std::string name; 
-	T priority;  
-	std::string deadline;
+	std::string name;   // Task name/description
+	T priority;         // Task priority (flexible type)
+	std::string deadline; // Task deadline
+
 public:
 	// Constructor
-	Task(const std::string& task_name, const T& task_priority, std::string& task_deadline) :
-		name(task_name), priority(task_priority), deadline(task_deadline) { }
-	
+	Task(const std::string& task_name, const T& task_priority, const std::string& task_deadline)
+		: name(task_name), priority(task_priority), deadline(task_deadline) {
+	}
+
 	// Getter functions
 	std::string get_name() const { return name; }
 	T get_priority() const { return priority; }
