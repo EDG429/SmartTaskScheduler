@@ -119,6 +119,36 @@ public:
 		file.close();
 		std::cout << "Tasks loaded from " << filename << "\n";
 	}
+	
+	// Sort tasks by name, priority, or deadline
+	void sort_tasks(const std::string& criteria) {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
+
+		if (criteria == "name") {
+			std::sort(tasks.begin(), tasks.end(),
+				[](const std::unique_ptr<Task<T>>& a, const std::unique_ptr<Task<T>>& b) {
+					return a->get_name() < b->get_name();
+				});
+			std::cout << "Tasks sorted by name.\n";
+		}
+		else if (criteria == "priority") {
+			std::sort(tasks.begin(), tasks.end(),
+				[](const std::unique_ptr<Task<T>>& a, const std::unique_ptr<Task<T>>& b) {
+					return a->get_priority() < b->get_priority();
+				});
+			std::cout << "Tasks sorted by priority.\n";
+		}
+		else if (criteria == "deadline") {
+			std::sort(tasks.begin(), tasks.end(),
+				[](const std::unique_ptr<Task<T>>& a, const std::unique_ptr<Task<T>>& b) {
+					return a->get_deadline() < b->get_deadline();
+				});
+			std::cout << "Tasks sorted by deadline.\n";
+		}
+		else {
+			std::cout << "Invalid sort criteria. Use 'name', 'priority', or 'deadline'.\n";
+		}
+	}
 };
 
 #endif // !SCHEDULER_H
