@@ -6,35 +6,49 @@
 #include <fstream>
 #include <iostream>
 
+// Thread optimized code
+
+// Global mutex for thread safety
 std::mutex mtx;
 
-void print_message(const std::string& message) {
-    // Lock the mutex to ensure only one thread prints at a time
+// Function that simulates workload
+void task_function(int task_id) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); //  simulates 100 ms of work
     std::lock_guard<std::mutex> lock(mtx);
-
-    // Print the message
-    std::cout << message << std::endl;
+    std::cout << "Task " << task_id << " completed on thread " << std::this_thread::get_id() << "\n";
 }
 
 int main()
 {
-    // Vector to hold multiple threads
-    std::vector<std::thread> threads;
+    // Step 1 - Detect the number of logical cores
+    unsigned int num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) num_threads = 2; // Fallback for unknown hardware
+    std::cout << "Detected " << num_threads << " logical cores.\n";
 
-    // Launch 5 threads
-    for (int i = 0; i < 5; i++) {
-        // Create a thread that runs 'print_message' with a unique message
-        threads.emplace_back(print_message, "Hello from thread " + std::to_string(i));
+    // Step 2 - Create a dynamic thread pool
+    std::vector<std::thread> thread_pool;
+    const int total_tasks = 10; // Number of tasks to perform
+
+    // Step 3 - Assign tasks to the threads in the pool
+    for (int i = 0; i < total_tasks; i++) {
+        if (thread_pool.size() >= num_threads) {
+            // wait for threads to finish before creating more
+            for (auto& t : thread_pool) {
+                if (t.joinable()) t.join();
+            }
+            thread_pool.clear();
+        }
+        // Launch a new thread
+        thread_pool.emplace_back(task_function, i);
     }
 
-    // Wait (join) for all threads to finish execution
-    for (auto& thread : threads) {
-        thread.join();
+    // Step 4 - Ensure all threads are joined
+    for (auto& t : thread_pool) {
+        if (t.joinable()) t.join();
     }
-    // Main thread prints this message after all threads are done
-    std::cout << "C++ Environment Ready!" << std::endl;
 
-    // Comment
+
+    std::cout << "All tasks completed. Program optimized for " << num_threads << " threads." << std::endl;
 
     return 0;
 }
