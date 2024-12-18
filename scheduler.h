@@ -5,6 +5,9 @@
 #include <vector>
 #include <memory> // << unique_ptr
 #include <algorithm> // for std::remove_if, used in removing tasks
+#include <iostream>   // For std::cout and std::endl
+#include <fstream>    // For file I/O
+#include <mutex>      // For std::mutex
 
 // Templated Task Scheduler class is responsible for managing a collection of tasks dynamically.
 // It uses templates so it can handle tasks with different types of priorities (e.g., int, string).
@@ -13,15 +16,19 @@ class TaskScheduler {
 private:
 	// A vector to store tasks. Each task is managed by a unique pointer to ensure automatic cleanup.	
 	std::vector<std::unique_ptr<Task<T>>> tasks;
+	// A mutex to protect tasks from concurrent access
+	std::mutex tasks_mutex;
 
 public:
 	// Function to add a new task dynamically with a name, priority, and deadline. Then stores the new task in the vector.
 	void add_task(const std::string& name, const T& priority, const std::string& deadline) {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
 		tasks.push_back(std::make_unique<Task<T>>(name, priority, deadline));
 	}
 
 	// Function to remove a task by its name,prevents the task list from growing indefinitely and keeps it relevant.
 	void remove_task(const std::string& name) {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
 		// std::remove_if is used to find tasks that match the given name.
 		auto remove_position = std::remove_if(tasks.begin(), tasks.end(),
 			/*The lambda defines the condition for removal: task->get_name() == name.
@@ -47,11 +54,31 @@ public:
 
 	// Function to display all tasks
 	void list_tasks() const {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
 		// If there are no tasks, let the user know.
 		if (tasks.empty()) {
 			std::cout << "No tasks to display.\n";
 			return;
 		}
+	}
+
+	// Function to save tasks to a file
+	void save_to_file(const std::string& filename) {
+		std::lock_guard<std::mutex> lock(tasks_mutex);
+		std::ofstream file(filename);
+		if (file.is_open()) {
+			for (const auto& task : tasks) {
+				file << task->get_name() << ","
+					<< task->get_priority() << ","
+					<< task->get_deadline() << "\n";
+			}
+			file.close();
+			std::cout << "Tasks saved to " << filename << "\n";
+		}
+		else {
+			std::cerr << "Failed to open file: " << filename << "\n";
+		}
+		
 	}
 };
 
