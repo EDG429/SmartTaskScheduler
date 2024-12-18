@@ -1,1 +1,2 @@
 # SmartTaskScheduler
+Smart Task Scheduler is a dynamic and efficient task management console application written in C++. It intelligently adapts to the user's system resources (CPU cores and threads) to optimize task execution and background processes. Designed to be lightweight, fast, and scalable, this project showcases practical use of multi-threading, mutexes, templates, and modern C++ concepts.
