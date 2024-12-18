@@ -1,32 +1,28 @@
 #include "Task.h"
-#include <vector>
+#include "scheduler.h"
 
 int main() {
-	// Example usage of the Task class with different priority types
-	Task<int> task1("Complete Project", 1, std::string("2024-12-20"));
-	Task<std::string> task2("Buy Groceries", std::string("High"), std::string("2024-12-19"));
-	Task<double> task3("Pay Bills", 2.5, std::string("2024-12-22"));
+	// Create a Task Scheduler for tasks with string priorities
+	TaskScheduler<std::string> scheduler;
 
-	// Store tasks in a vector (we'll use smart pointers later)
-	std::vector<Task<std::string>> string_priority_tasks;
-	std::vector<Task<int>> int_priority_tasks;
+	// Add tasks to the scheduler
+	scheduler.add_task("Complete Project", "High", "2024-12-20");
+	scheduler.add_task("Buy Groceries", "Medium", "2024-12-19");
+	scheduler.add_task("Pay Bills", "Low", "2024-12-22");
 
-	int_priority_tasks.emplace_back(std::string("Finish Homework"), 2, std::string("2024-12-18"));
-	string_priority_tasks.emplace_back(std::string("Call Doctor"), std::string("Medium"), std::string("2024-12-21"));
+	// List tasks
+	std::cout << "Initial Task List:\n";
+	scheduler.list_tasks();
 
-	// Display tasks
-	std::cout << "Testing Task Class:" << std::endl;
-	task1.display();
-	task2.display();
-	task3.display();
+	// Remove a task by name
+	scheduler.remove_task("Buy Groceries");
 
-	std::cout << "\nTasks in Vector:" << std::endl;
-	for (const auto& task : int_priority_tasks) {
-		task.display();
-	}
-	for (const auto& task : string_priority_tasks) {
-		task.display();
-	}
+	// List tasks after removal
+	std::cout << "\nTask List After Removal:\n";
+	scheduler.list_tasks();
+
+	// Attempt to remove a non-existent task
+	scheduler.remove_task("Nonexistent Task");
 
 	return 0;
 }

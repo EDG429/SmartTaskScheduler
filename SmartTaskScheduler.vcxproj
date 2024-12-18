@@ -131,6 +131,7 @@
     <ClCompile Include="SmartTaskScheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scheduler.h" />
     <ClInclude Include="Task.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
