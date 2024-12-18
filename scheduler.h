@@ -62,6 +62,11 @@ public:
 			std::cout << "No tasks to display.\n";
 			return;
 		}
+
+		std::cout << "Tasks:\n";
+		for (const auto& task : tasks) {
+			task->display();
+		}
 	}
 
 	// Function to save tasks to a file
@@ -74,8 +79,7 @@ public:
 					<< task->get_priority() << ","
 					<< task->get_deadline() << "\n";
 			}
-			file.close();
-			std::cout << "Tasks saved to " << filename << "\n";
+			file.close();			
 		}
 		else {
 			std::cerr << "Failed to open file: " << filename << "\n";
